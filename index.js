@@ -31,15 +31,15 @@ let currentNum = [];
 let numTotal = [];
 let currentOperator = '';
 
-numBtn.forEach(numbtn => numbtn.addEventListener('click', () => {
-    
-}, {once: true}))
 
 // first input is array of numbers entered, second input is array of totals
 function addition(a, b) { 
     // if totals array is empty, add first value from numbers entered array
     if (a.length !== 0 && b.length === 0) { 
         b.push(a[0]);
+    } else if (a.length === 2) {
+        let initAdd = a[0] + a[1];
+        b.push(initAdd)
     } else {
         let lastA = a.length - 1; //last value in array
         let lastB = b.length - 1;
@@ -99,32 +99,17 @@ function display() {
     operatorBtn.forEach(optbtn => optbtn.addEventListener('click', () => {
         switch (currentOperator) {
             case 'plus':
-                if (totalOutput.innerHTML.length === 0) {
-                    totalOutput.innerHTML = currentOutput.innerHTML + ' + ';
-                } else {
-                    totalOutput.innerHTML = totalOutput.innerHTML + ' + ' + currentOutput.innerHTML;
-                }
+                if (numTotal.length )
+                totalOutput.innerHTML += currentOutput.innerHTML + ' + ';
                 break;
             case 'minus':
-                if (totalOutput.innerHTML.length === 0) {
-                    totalOutput.innerHTML = currentOutput.innerHTML + ' - ';
-                } else {
-                    totalOutput.innerHTML = totalOutput.innerHTML + ' - ' + currentOutput.innerHTML;
-                }
+                totalOutput.innerHTML += currentOutput.innerHTML + ' - ';
                 break;
             case 'multiply':
-                if (totalOutput.innerHTML.length === 0) {
-                    totalOutput.innerHTML = currentOutput.innerHTML + ' x ';
-                } else {
-                    totalOutput.innerHTML = totalOutput.innerHTML + ' x ' + currentOutput.innerHTML;
-                }
+                totalOutput.innerHTML += currentOutput.innerHTML + ' x ';
                 break;
             case 'divide':
-                if (totalOutput.innerHTML.length === 0) {
-                    totalOutput.innerHTML = currentOutput.innerHTML + ' / ';
-                } else {
-                    totalOutput.innerHTML = totalOutput.innerHTML + ' / ' + currentOutput.innerHTML;
-                }
+                totalOutput.innerHTML += currentOutput.innerHTML + ' / ';
                 break;
         }
         
@@ -139,22 +124,37 @@ function display() {
     })
 }
 
-function clearDisplay() {clearBtn.addEventListener('click', () => {currentOutput.innerHTML = ' ' }) };
+function clearDisplay() {clearBtn.addEventListener('click', () => {
+    currentOutput.innerHTML = '';
+    totalOutput.innerHTML = ''; 
+}) };
 
 let tempArray = [];
+let firstOpt = '';
+let firstNum = [];
 
-plusBtn.addEventListener('click', () => {currentOperator = plusBtn.value;});
-minusBtn.addEventListener('click', () => {currentOperator = minusBtn.value;});
-multiplyBtn.addEventListener('click', () => {currentOperator = multiplyBtn.value;});
-divideBtn.addEventListener('click', () => {currentOperator = divideBtn.value;});
+plusBtn.addEventListener('click', () => {totalOutput.innerHTML = currentOutput.innerHTML + ' + ';},{once: true});
+minusBtn.addEventListener('click', () => {totalOutput.innerHTML = currentOutput.innerHTML + ' - ';}, {once: true});
+multiplyBtn.addEventListener('click', () => {totalOutput.innerHTML = currentOutput.innerHTML + ' x ';}, {once: true});
+divideBtn.addEventListener('click', () => {totalOutput.innerHTML = currentOutput.innerHTML + ' / ';}, {once: true}); 
+
 
 //adds each number press to a temporary holding array
 numBtn.forEach(numBtn => numBtn.addEventListener('click',(e) => {
     tempArray.push(numBtn.value);
+    if (firstNum.length === 2) {
+        toOperate(firstOpt,firstNum,numTotal);
+    }
 }))
 
+
+
 operatorBtn.forEach(operatorBtn => operatorBtn.addEventListener('click',(e) => {
-    //currentOperator = operatorBtn.value;
+    if (firstOpt === '') {
+        firstOpt = operatorBtn.value;
+    } else {
+        currentOperator = operatorBtn.value;
+    }
 
     //concatenates values in the temp array into a temp string
     let tempNum = '';
@@ -162,7 +162,13 @@ operatorBtn.forEach(operatorBtn => operatorBtn.addEventListener('click',(e) => {
         tempNum = tempNum + tempArray[i];
     }
     // convert string back to number and add to current numbers array
-    currentNum.push(parseInt(tempNum))
+    if (firstNum.length < 3) {
+        firstNum.push(parseInt(tempNum))
+        currentNum.push(parseInt(tempNum));
+    } else {
+        currentNum.push(parseInt(tempNum));
+    }
+    console.log('firstNum',firstNum)
 
     toOperate(currentOperator,currentNum,numTotal);
 
